@@ -1,0 +1,470 @@
+# Strategic Decision Engine - Cursor IDE Implementation Prompt
+
+## Project Context
+I need you to build a comprehensive AI-powered strategic planning platform for CEOs. This system will allow executives to upload company documents and get intelligent strategic insights through a RAG (Retrieval Augmented Generation) system.
+
+## Technology Stack Requirements
+```xml
+<tech_stack>
+  <backend>FastAPI with Python</backend>
+  <database>
+    <structured>SQLAlchemy with SQLite</structured>
+    <vector>Pinecone for document embeddings</vector>
+  </database>
+  <frontend>Streamlit</frontend>
+  <ai_ml>
+    <embeddings>OpenAI text-embedding-ada-002</embeddings>
+    <llm>OpenAI GPT-4</llm>
+    <approach>Simple RAG (Retrieval Augmented Generation)</approach>
+  </ai_ml>
+  <document_processing>PyPDF2, python-docx</document_processing>
+</tech_stack>
+```
+
+## Project Structure Requirements
+```xml
+<project_structure>
+  <root>strategic_engine/</root>
+  <backend>
+    <path>backend/</path>
+    <main_app>app/main.py</main_app>
+    <models>app/models/database.py</models>
+    <services>
+      <document_processor>app/services/document_processor.py</document_processor>
+      <rag_service>app/services/rag_service.py</rag_service>
+      <openai_service>app/services/openai_service.py</openai_service>
+    </services>
+    <api>app/api/routes.py</api>
+    <requirements>requirements.txt</requirements>
+  </backend>
+  <frontend>
+    <path>frontend/</path>
+    <main_app>streamlit_app.py</main_app>
+    <requirements>requirements.txt</requirements>
+  </frontend>
+  <uploads>uploads/</uploads>
+  <config>.env</config>
+</project_structure>
+```
+
+## Core Functionality Requirements
+
+### Phase 1: Document Management System
+```xml
+<document_management>
+  <upload_functionality>
+    <supported_formats>PDF, DOCX, TXT</supported_formats>
+    <file_processing>
+      <text_extraction>Extract text from uploaded documents</text_extraction>
+      <metadata_extraction>Filename, document type, upload date, word count</metadata_extraction>
+      <document_classification>Auto-classify as financial, market_research, internal, or general</document_classification>
+    </file_processing>
+    <storage>
+      <database>Store document metadata and full text in SQLite</database>
+      <vector_db>Store document chunks as embeddings in Pinecone</vector_db>
+    </storage>
+  </upload_functionality>
+  
+  <document_processing>
+    <chunking_strategy>
+      <chunk_size>1000 characters</chunk_size>
+      <overlap>200 characters</overlap>
+      <break_strategy>Break at sentence boundaries when possible</break_strategy>
+    </chunking_strategy>
+    <embedding_generation>Generate OpenAI embeddings for each chunk</embedding_generation>
+  </document_processing>
+</document_management>
+```
+
+### Phase 2: RAG Query System
+```xml
+<rag_system>
+  <query_processing>
+    <input>Natural language strategic business questions</input>
+    <embedding>Convert query to OpenAI embedding</embedding>
+    <retrieval>
+      <vector_search>Find similar document chunks in Pinecone</vector_search>
+      <top_k>Retrieve top 5 most relevant chunks</top_k>
+      <filtering>Optional filter by document type</filtering>
+    </retrieval>
+  </query_processing>
+  
+  <response_generation>
+    <context_preparation>Combine retrieved chunks into context</context_preparation>
+    <prompt_engineering>
+      <system_role>Strategic business advisor for CEOs</system_role>
+      <guidelines>Provide actionable recommendations, cite sources, focus on business value</guidelines>
+    </prompt_engineering>
+    <llm_response>Generate response using GPT-4 with context</llm_response>
+    <source_tracking>Track which documents were used for citations</source_tracking>
+  </response_generation>
+</rag_system>
+```
+
+### Phase 3: User Interface
+```xml
+<streamlit_interface>
+  <layout>
+    <sidebar>
+      <document_upload>File uploader with document type selection</document_upload>
+      <document_list>Show all uploaded documents with delete functionality</document_list>
+    </sidebar>
+    <main_area>
+      <query_interface>
+        <sample_questions>Predefined strategic questions for guidance</sample_questions>
+        <text_input>Large text area for user queries</text_input>
+        <document_filter>Option to filter by document type</document_filter>
+        <analyze_button>Submit query for processing</analyze_button>
+      </query_interface>
+      <response_display>
+        <strategic_analysis>Main response with formatting</strategic_analysis>
+        <source_citations>List of documents used</source_citations>
+        <confidence_metrics>Similarity scores and confidence indicators</confidence_metrics>
+      </response_display>
+    </main_area>
+  </layout>
+  
+  <features>
+    <real_time_feedback>Loading spinners and progress indicators</real_time_feedback>
+    <error_handling>User-friendly error messages</error_handling>
+    <responsive_design>Clean, professional business interface</responsive_design>
+  </features>
+</streamlit_interface>
+```
+
+## Database Schema Requirements
+```xml
+<database_schema>
+  <documents_table>
+    <fields>
+      <id>Primary key, auto-increment</id>
+      <filename>Original filename</filename>
+      <content>Full extracted text</content>
+      <document_type>financial, market_research, internal, general</document_type>
+      <upload_date>Timestamp</upload_date>
+      <metadata>JSON string with additional metadata</metadata>
+      <embedding_status>pending, completed, failed</embedding_status>
+    </fields>
+  </documents_table>
+  
+  <query_history_table>
+    <fields>
+      <id>Primary key, auto-increment</id>
+      <query>User's original question</query>
+      <response>Generated response</response>
+      <sources>JSON string of source documents</sources>
+      <timestamp>When query was made</timestamp>
+      <confidence_score>Average similarity score</confidence_score>
+    </fields>
+  </query_history_table>
+</database_schema>
+```
+
+## API Endpoints Requirements
+```xml
+<api_endpoints>
+  <document_endpoints>
+    <upload>POST /api/upload-document - Upload and process new document</upload>
+    <list>GET /api/documents - List all uploaded documents</list>
+    <delete>DELETE /api/documents/{id} - Delete document and embeddings</delete>
+  </document_endpoints>
+  
+  <query_endpoints>
+    <query>POST /api/query - Submit strategic question for analysis</query>
+    <history>GET /api/query-history - Get recent query history</history>
+  </query_endpoints>
+  
+  <utility_endpoints>
+    <health>GET /api/health - Health check</health>
+    <status>GET / - API status</status>
+  </utility_endpoints>
+</api_endpoints>
+```
+
+## Sample Use Cases to Implement
+```xml
+<sample_use_cases>
+  <swot_analysis>
+    <query>"Create a SWOT analysis using our internal reports and market data"</query>
+    <expected_behavior>
+      <retrieval>Find relevant chunks about strengths, weaknesses, opportunities, threats</retrieval>
+      <response>Generate comprehensive SWOT with specific examples from documents</response>
+      <citations>Reference specific reports and sections used</citations>
+    </expected_behavior>
+  </swot_analysis>
+  
+  <market_expansion>
+    <query>"Should we expand to the European market based on our current financial position?"</query>
+    <expected_behavior>
+      <retrieval>Find financial data, market research, capability assessments</retrieval>
+      <response>Provide strategic recommendation with financial analysis</response>
+      <considerations>Include risks, opportunities, resource requirements</considerations>
+    </expected_behavior>
+  </market_expansion>
+  
+  <revenue_analysis>
+    <query>"What are our main revenue drivers according to the latest financial reports?"</query>
+    <expected_behavior>
+      <retrieval>Focus on financial documents and revenue data</retrieval>
+      <response>Identify and rank revenue sources with supporting data</response>
+      <insights>Include trends and growth patterns</insights>
+    </expected_behavior>
+  </revenue_analysis>
+</sample_use_cases>
+```
+
+## Environment Configuration
+```xml
+<environment_setup>
+  <env_variables>
+    <openai>OPENAI_API_KEY=your_openai_api_key</openai>
+    <pinecone>
+      <api_key>PINECONE_API_KEY=your_pinecone_api_key</api_key>
+      <environment>PINECONE_ENVIRONMENT=your_pinecone_environment</environment>
+      <index>PINECONE_INDEX_NAME=strategic-docs</index>
+    </pinecone>
+    <database>DATABASE_URL=sqlite:///./strategic_engine.db</database>
+  </env_variables>
+  
+  <dependencies>
+    <backend>
+      <fastapi>fastapi==0.104.1</fastapi>
+      <uvicorn>uvicorn==0.24.0</uvicorn>
+      <sqlalchemy>sqlalchemy==2.0.23</sqlalchemy>
+      <pinecone>pinecone-client==2.2.4</pinecone>
+      <openai>openai==1.3.7</openai>
+      <document_processing>PyPDF2==3.0.1, python-docx==0.8.11</document_processing>
+      <utilities>python-multipart, pydantic, requests, python-dotenv</utilities>
+    </backend>
+    <frontend>
+      <streamlit>streamlit==1.28.2</streamlit>
+      <visualization>plotly==5.17.0</visualization>
+      <data>pandas==2.1.4</data>
+      <http>requests==2.31.0</http>
+    </frontend>
+  </dependencies>
+</environment_setup>
+```
+
+## Implementation Instructions
+
+### Step 1: Project Initialization
+```xml
+<step_1>
+  <create_structure>Set up the complete folder structure as specified</create_structure>
+  <install_dependencies>Create requirements.txt files and install all packages</install_dependencies>
+  <environment_setup>Create .env file with placeholder API keys</environment_setup>
+  <git_init>Initialize git repository with appropriate .gitignore</git_init>
+</step_1>
+```
+
+### Step 2: Database Layer
+```xml
+<step_2>
+  <database_models>
+    <create_models>Implement SQLAlchemy models for Documents and QueryHistory tables</create_models>
+    <database_connection>Set up database connection and session management</database_connection>
+    <table_creation>Implement automatic table creation on startup</table_creation>
+  </database_models>
+</step_2>
+```
+
+### Step 3: Document Processing Service
+```xml
+<step_3>
+  <document_processor>
+    <text_extraction>Implement extractors for PDF, DOCX, and TXT files</text_extraction>
+    <metadata_extraction>Extract filename, type, date, word count, character count</metadata_extraction>
+    <document_classification>Auto-classify documents based on filename and content keywords</document_classification>
+    <text_chunking>Implement intelligent chunking with sentence boundary detection</text_chunking>
+    <error_handling>Handle corrupted files and unsupported formats gracefully</error_handling>
+  </document_processor>
+</step_3>
+```
+
+### Step 4: OpenAI Integration Service
+```xml
+<step_4>
+  <openai_service>
+    <embedding_generation>
+      <single>Generate embedding for single text</single>
+      <batch>Generate embeddings for multiple texts efficiently</batch>
+    </embedding_generation>
+    <chat_completion>
+      <strategic_prompts>Create business-focused system prompts</strategic_prompts>
+      <response_generation>Generate responses with context and citations</response_generation>
+      <query_analysis>Analyze queries to determine intent and extract key concepts</query_analysis>
+    </chat_completion>
+    <error_handling>Handle API rate limits and errors gracefully</error_handling>
+  </openai_service>
+</step_4>
+```
+
+### Step 5: RAG Service with Pinecone
+```xml
+<step_5>
+  <rag_service>
+    <pinecone_setup>
+      <initialization>Initialize Pinecone client and create index if needed</initialization>
+      <vector_operations>Implement upsert, query, and delete operations</vector_operations>
+    </pinecone_setup>
+    <document_indexing>
+      <chunk_embedding>Generate embeddings for document chunks</chunk_embedding>
+      <metadata_storage>Store chunk text, document info, and metadata</metadata_storage>
+      <batch_upsert>Efficiently upload multiple vectors</batch_upsert>
+    </document_indexing>
+    <query_processing>
+      <similarity_search>Find most relevant chunks based on query embedding</similarity_search>
+      <filtering>Apply document type filters when specified</filtering>
+      <reranking>Sort results by similarity score</reranking>
+    </query_processing>
+    <response_generation>
+      <context_preparation>Combine retrieved chunks into coherent context</context_preparation>
+      <llm_integration>Generate final response using OpenAI with context</llm_integration>
+      <source_tracking>Track which documents contributed to the response</source_tracking>
+    </response_generation>
+  </rag_service>
+</step_5>
+```
+
+### Step 6: FastAPI Backend
+```xml
+<step_6>
+  <api_implementation>
+    <app_setup>
+      <fastapi_app>Create FastAPI application with metadata</fastapi_app>
+      <cors_middleware>Configure CORS for frontend integration</cors_middleware>
+      <route_inclusion>Include all API routes</route_inclusion>
+    </app_setup>
+    <endpoints>
+      <document_upload>
+        <file_handling>Handle multipart file uploads</file_handling>
+        <processing>Process documents and store in database</processing>
+        <embedding>Generate and store embeddings in Pinecone</embedding>
+        <response>Return upload status and document info</response>
+      </document_upload>
+      <document_management>
+        <list_documents>Return all documents with metadata</list_documents>
+        <delete_document>Remove from both database and Pinecone</delete_document>
+      </document_management>
+      <query_processing>
+        <rag_query>Process strategic questions using RAG</rag_query>
+        <history_storage>Save queries and responses</history_storage>
+        <query_history>Retrieve recent query history</query_history>
+      </query_processing>
+    </endpoints>
+    <error_handling>Comprehensive error handling with appropriate HTTP status codes</error_handling>
+  </api_implementation>
+</step_6>
+```
+
+### Step 7: Streamlit Frontend
+```xml
+<step_7>
+  <streamlit_app>
+    <page_configuration>
+      <layout>Wide layout with sidebar</layout>
+      <theme>Professional business theme</theme>
+      <title>Strategic Decision Engine</title>
+    </page_configuration>
+    <sidebar_implementation>
+      <file_upload>
+        <uploader>Support PDF, DOCX, TXT files</uploader>
+        <document_type>Dropdown for document classification</document_type>
+        <upload_button>Process and upload to backend</upload_button>
+      </file_upload>
+      <document_list>
+        <display>Show all uploaded documents</display>
+        <metadata>Display filename, type, status, date</metadata>
+        <delete_functionality>Delete documents with confirmation</delete_functionality>
+      </document_list>
+    </sidebar_implementation>
+    <main_interface>
+      <header>Professional title and branding</header>
+      <sample_questions>Predefined strategic questions for guidance</sample_questions>
+      <query_input>
+        <text_area>Large input area for strategic questions</text_area>
+        <document_filter>Optional filter by document type</document_filter>
+        <analyze_button>Submit query for processing</analyze_button>
+      </query_input>
+      <response_display>
+        <strategic_analysis>Formatted response with proper styling</strategic_analysis>
+        <source_citations>List of source documents used</source_citations>
+        <confidence_metrics>Display similarity scores and confidence</confidence_metrics>
+        <query_history>Show recent queries and responses</query_history>
+      </response_display>
+    </main_interface>
+    <ui_enhancements>
+      <loading_indicators>Spinners for processing operations</loading_indicators>
+      <success_messages>Confirmation for successful operations</success_messages>
+      <error_handling>User-friendly error messages</error_handling>
+      <responsive_design>Clean, professional appearance</responsive_design>
+    </ui_enhancements>
+  </streamlit_app>
+</step_7>
+```
+
+### Step 8: Testing and Integration
+```xml
+<step_8>
+  <testing>
+    <document_upload>Test with various file types and sizes</document_upload>
+    <text_extraction>Verify text extraction accuracy</text_extraction>
+    <embedding_generation>Test Pinecone integration</embedding_generation>
+    <query_processing>Test with sample strategic questions</query_processing>
+    <end_to_end>Complete workflow testing</end_to_end>
+  </testing>
+  <integration>
+    <backend_frontend>Ensure smooth API communication</backend_frontend>
+    <error_handling>Test error scenarios and recovery</error_handling>
+    <performance>Optimize response times</performance>
+  </integration>
+</step_8>
+```
+
+## Quality Requirements
+```xml
+<quality_requirements>
+  <performance>
+    <response_time>Query responses under 10 seconds</response_time>
+    <file_processing>Document processing under 30 seconds</file_processing>
+    <concurrent_users>Support at least 5 concurrent users</concurrent_users>
+  </performance>
+  <accuracy>
+    <relevance>Retrieved chunks should be highly relevant to queries</relevance>
+    <citations>All claims should reference source documents</citations>
+    <business_focus>Responses should be strategic and actionable</business_focus>
+  </accuracy>
+  <usability>
+    <intuitive_interface>Easy to use for non-technical executives</intuitive_interface>
+    <clear_feedback>Clear status messages and progress indicators</clear_feedback>
+    <professional_appearance>Business-appropriate visual design</professional_appearance>
+  </usability>
+</quality_requirements>
+```
+
+## Success Criteria
+```xml
+<success_criteria>
+  <functional>
+    <document_upload>Successfully upload and process PDF, DOCX, TXT files</document_upload>
+    <text_extraction>Accurately extract text from all supported formats</text_extraction>
+    <embedding_storage>Store document embeddings in Pinecone successfully</embedding_storage>
+    <query_processing>Generate relevant responses to strategic questions</query_processing>
+    <source_tracking>Properly cite source documents in responses</source_tracking>
+  </functional>
+  <technical>
+    <api_integration>All API endpoints working correctly</api_integration>
+    <database_operations>Successful CRUD operations on documents and queries</database_operations>
+    <error_handling>Graceful handling of errors and edge cases</error_handling>
+    <scalability>System can handle multiple documents and concurrent queries</scalability>
+  </technical>
+  <business>
+    <strategic_value>Responses provide actionable business insights</strategic_value>
+    <time_savings>Reduce time for strategic research and analysis</time_savings>
+    <decision_support>Help executives make informed strategic decisions</decision_support>
+  </business>
+</success_criteria>
+```
+
+Please implement this Strategic Decision Engine following this detailed specification. Focus on creating a professional, production-ready system that CEOs can actually use for strategic planning and decision-making.
